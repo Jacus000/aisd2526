@@ -1,0 +1,341 @@
+\documentclass[12pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{geometry}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{enumitem}
+\usepackage{booktabs}
+\usepackage{xcolor}
+\usepackage{float}
+\usepackage{amssymb}
+
+% Ustawienia strony
+\geometry{a4paper, margin=1in}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{1em}
+
+% Formatowanie sekcji
+\titleformat{\section}
+{\Large\bfseries\color{blue!70!black}}
+{\thesection}{1em}{}
+\titleformat{\subsection}
+{\large\bfseries\color{blue!60!black}}
+{\thesubsection}{1em}{}
+
+% Nagłówek i stopka
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{Algorytmy i struktury danych}
+\fancyhead[R]{Lista 2}
+\fancyfoot[C]{\thepage}
+
+\title{Algorytmy i struktury danych \\ Lista 3}
+\author{Jan Mikołajczyk 287396}
+\date{19 Stycznia 2026}
+
+\begin{document}
+
+\maketitle
+
+\vspace{2cm}
+
+\begin{center}
+\rule{0.8\textwidth}{0.5pt}
+\end{center}
+
+\section{Algorytmy \textbf{CUT ROD}}
+
+\subsection{Rekurencyjne rozwiązanie problemu cięcia pręta}
+
+Niech $p_j$ oznacza cenę pręta o długości $j$, a $R(n)$ maksymalny zysk możliwy do uzyskania z pręta o długości $n$. Wtedy zachodzi rekurencja:
+\[
+R(0) = 0,
+\]
+\[
+R(n) = \max_{1 \leq j \leq n} \left( p_j + R(n - j) \right).
+\]
+
+Dla każdej możliwej pierwszej długości odciętego fragmentu $j$ algorytm sprawdza, jaki zysk daje sprzedaż kawałka długości $j$ oraz optymalny podział pozostałej części długości $n-j$. Spośród wszystkich możliwości wybierana jest ta, która daje największy łączny dochód.
+
+\subsection{Podejście z użyciem memoizacji do algorytmu \textbf{CUT ROD}}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\linewidth]{cut_rod_memo.png}
+    \caption{Kod z użyciem memoizacji w celu wykonywania każdego podproblemu tylko raz.}
+    \label{fig:placeholder}
+\end{figure}
+
+Wersja z memoizacją eliminuje wielokrotne obliczanie tych samych podproblemów, przechowując ich wyniki w tablicy pomocniczej. Dzięki temu, że każdy podproblem jest rozwiązywany tylko raz, a złożoność czasowa algorytmu spada z wykładniczej do $O(n^2)$.
+
+\subsection{Podejście iteracyjne do algorytmu \textbf{CUT ROD}}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\linewidth]{cut_rod_iter.png}
+    \caption{Iteracyjny algorytm \textbf{CUT ROD} wykorzystujący programowanie dynamiczne}
+    \label{fig:placeholder}
+\end{figure}
+
+W podejściu iteracyjnym rezygnujemy z rekurencji na rzecz dynamicznego programowania typu \emph{bottom--up}. Tworzymy tablicę $tab$, gdzie $tab[i]$ oznacza maksymalny zysk możliwy do uzyskania z pręta o długości $i$.
+
+Złożoność czasowa tego algorytmu wynosi $O(n^2)$.
+
+
+\section*{\textbf{\Large Wnioski dotyczące różnych podejść do algorytmy }\textbf{CUT ROD}}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\linewidth]{comparison_of_every_cutrod.png}
+    \caption{Porównanie każdego podejścia dla różnych wielkości próbek danych}
+    \label{fig:placeholder}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\linewidth]{diffrent_plot.png}
+    \caption{Dokładny stosunek czasu do wielkości danych}
+    \label{fig:placeholder}
+\end{figure}
+
+\subsection{Wnioski z analizy pomiarów i testów}
+
+Na podstawie pomiarów czasu wykonania trzech wersji algorytmu cięcia pręta można sformułować następujące wnioski:
+
+\begin{itemize}
+    \item \textbf{Algorytm rekurencyjny} bez zapamiętywania wyników skaluje się bardzo słabo. Czas obliczeń rośnie wykładniczo wraz z $n$, co wynika z wielokrotnego rozwiązywania tych samych podproblemów. Już dla umiarkowanych rozmiarów wejścia staje się on niepraktyczny.
+
+    \item \textbf{Algorytm z memoizacją} znacząco poprawia wydajność dzięki zapisywaniu wyników w tablicy \texttt{memo}. Każdy podproblem jest liczony tylko raz, co redukuje złożoność do $O(n^2)$. Dane potwierdzają dobrą skalowalność nawet dla dużych wartości $n$.
+
+    \item \textbf{Algorytm iteracyjny (bottom--up)} jest najszybszy w praktyce. Brak rekurencji i sekwencyjne wypełnianie tablicy dynamicznej zmniejszają narzut obliczeniowy, przy zachowaniu tej samej złożoności $O(n^2)$.
+
+\end{itemize}
+
+
+\section{Algorytmy \textbf{LCS} (Longest Common Subsequence)}
+
+\subsection{Iteracyjne rozwiązanie problemu LCS}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\linewidth]{lcs_iter.png}
+    \caption{Algorytm LCS z podejściem iteracyjnym}
+    \label{fig:placeholder}
+\end{figure}
+
+Algorytm oblicza długość najdłuższego wspólnego podciągu (LCS -- \emph{Longest Common Subsequence}) dla dwóch napisów $s_1$ i $s_2$ o długościach odpowiednio $m$ i $n$. Wykorzystuje on dynamiczne programowanie w podejściu bottom--up.
+
+
+\paragraph{Niezmiennik pętli.}
+Po zakończeniu każdej iteracji pętli zewnętrznej dla danego $i$ oraz każdej iteracji pętli wewnętrznej dla danego $j$ zachodzi:
+\[
+matrix[i][j] = \text{długość LCS dla } s_1[1..i] \text{ i } s_2[1..j].
+\]
+Oznacza to, że w każdej chwili tablica zawiera poprawne rozwiązania wszystkich podproblemów odpowiadających prefiksom krótszym lub równym aktualnie przetwarzanym.
+
+
+
+\subsection{Porównanie podejścia iteracyjnego z podejściem rekurencyjnym z memoizacją}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\linewidth]{lcs_comparison_graph.png}
+    \caption{Porównanie obu podejść w kontraście z długością LCS}
+    \label{fig:placeholder}
+\end{figure}
+
+W badaniu porównano dwie implementacje obliczania długości najdłuższego wspólnego podciągu (LCS) dla napisów $s_1$ i $s_2$:
+
+\begin{enumerate}
+    \item \textbf{Rekurencja z memoizacją} (\texttt{CALL\_LCS\_RECURENCY\_MEMO}) – klasyczna rekurencja, w której wyniki podproblemów są zapisywane w macierzy \texttt{memo}. Każdy element \texttt{memo[n][m]} jest obliczany tylko raz, a kolejne wywołania korzystają z zapisanej wartości.
+    
+    \item \textbf{Iteracyjne podejście bottom--up} (\texttt{CALL\_LCS\_ITER\_SILENT}) – macierz dynamiczna wypełniana wiersz po wierszu, bez wywołań rekurencyjnych.
+\end{enumerate}
+
+\paragraph{Analiza teoretyczna:}  
+Obie metody tworzą macierz rozmiaru $(n+1) \times (m+1)$ i każdy element liczą dokładnie raz. Z tego względu ich złożoność czasowa wynosi:
+\[
+O(m \cdot n),
+\]
+
+\paragraph{Wnioski z wykresu:}
+\begin{itemize}
+    \item Dla małych rozmiarów napisów oba algorytmy osiągają bardzo podobne czasy wykonania.  
+    \item Dla większych danych ($n, m > 1000$) można zaobserwować drobne różnice: czas iteracyjny może być nieco niższy lub wyższy niż wersji rekurencyjnej z memoizacją.
+\end{itemize}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\linewidth]{lcs_iter_recu.png}
+    \caption{Porównanie słupkowe}
+    \label{fig:placeholder}
+\end{figure}
+
+\section{Activity Selector}
+
+\textbf{Activity Selector} polega na wybraniu maksymalnej liczby niepokrywających się aktywności z danego zbioru, gdzie każda aktywność ma określony czas rozpoczęcia i zakończenia.  
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.75\linewidth]{structactivity.png}
+    \caption{Definiujemy pomocniczy typ zmiennych (strukture) i funkcje}
+    \label{fig:placeholder}
+\end{figure}
+
+\subsection{Activity Selector podejście rekurencyjne}
+\subsection{Rekurencyjny Activity Selector (od końca)}
+
+Przedstawiony algorytm rozwiązuje problem wyboru maksymalnej liczby niepokrywających się aktywności, korzystając z podejścia rekurencyjnego i rozpoczynając wybór od ostatniej aktywności.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.75\linewidth]{recur_activity.png}
+    \caption{Rekurencyjny algorytm Activity selector}
+    \label{fig:placeholder}
+\end{figure}
+
+\paragraph{Działanie algorytmu:}
+\begin{enumerate}
+    \item Wybierana jest \textbf{ostatnia aktywność} w posortowanej liście (czyli ta o największym czasie rozpoczęcia), i dodawana do wyniku.
+    \item Następnie wywoływana jest funkcja rekurencyjna \texttt{RECURENCY\_STEP\_ACTIVITY\_SELECTOR}, która:
+    \begin{itemize}
+        \item przegląda wszystkie aktywności poprzedzające aktualnie wybraną,
+        \item wybiera ostatnią, która kończy się przed rozpoczęciem aktualnie wybranej,
+        \item dodaje ją do wyniku i wywołuje się rekurencyjnie dla tej nowo wybranej aktywności.
+    \end{itemize}
+    \item Po zakończeniu rekurencji lista wynikowa jest odwracana, aby zachować kolejność rosnących czasów rozpoczęcia.
+\end{enumerate}
+
+\subsection{Activity Selector z programowaniem dynamicznym}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.75\linewidth]{FINDNEXT.png}
+    \caption{Funkcja FIND NEXT. Część kodu reprezentującego podejście dynamiczne do problemu Activity Selector.}
+    \label{fig:placeholder}
+\end{figure}
+
+\paragraph{Funkcja \texttt{FIND\_NEXT}:}  
+- Funkcja ta przyjmuje czas zakończenia aktywności i wyszukuje pierwszą aktywność w posortowanej liście, która zaczyna się "nie wcześniej niż po zakończeniu aktualnej".  
+- W implementacji wykorzystano "wyszukiwanie binarne", dzięki czemu znalezienie następnej kompatybilnej aktywności odbywa się w czasie $O(\log n)$.  
+- Tablica \texttt{next\_compatible[i]} przechowuje indeks następnej aktywności dla każdej $i$, co pozwala efektywnie odtwarzać wynik końcowy.
+
+\paragraph{Podsumowanie:}  
+Algorytm wykorzystuje programowanie dynamiczne, ponieważ buduje optymalne rozwiązania dla wszystkich podproblemów w tablicy $tab$ od końca do początku, a funkcja \texttt{FIND\_NEXT} umożliwia szybkie znalezienie kompatybilnych aktywności w celu efektywnego uaktualniania wartości $tab$.
+
+\subsection{Porównanie podejścia rekurencyjnego, iteracyjnego i z użyciem programowania dynamicznego}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1\linewidth]{acitvity.png}
+    \caption{Porównanie różnych podejść do rozwiązania problemu Activity Selector}
+    \label{fig:placeholder}
+\end{figure}
+Przebadano trzy implementacje wyboru maksymalnej liczby niepokrywających się aktywności:  
+
+\paragraph{Wnioski z pomiarów:}
+\begin{itemize}
+    \item \textbf{Najwolniejsza jest wersja z binarnym wyszukiwaniem}, mimo że ma podobną złożoność $O(n \log n)$.  
+    \item Przyczyny spowolnienia:
+    \begin{enumerate}
+        \item Koszt stały związany z wywołaniem \texttt{FIND\_NEXT} w każdej iteracji, czyli kilkanaście instrukcji dla wyszukiwania binarnego zamiast prostego sprawdzenia w pętli.  
+        \item Dodatkowe operacje na tablicach: aktualizacja $tab[i]$, $picked[i]$ oraz $next\_compatible[i]$, co zwiększa narzut pamięciowy i czasowy.  
+    \end{enumerate}
+    \item Wersje iteracyjna i rekurencyjna działają bardzo szybko, ponieważ dla każdej aktywności sprawdzają tylko \textbf{ostatnio wybraną lub poprzednią} aktywność w liniowej pętli.
+\end{itemize}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=1\linewidth]{barcharactiviity.png}
+    \caption{Inna perspektywa stosunku ilości aktywności i czasu dla każdego z trzech algorytmów}
+    \label{fig:placeholder}
+\end{figure}
+
+\section{Kodowanie Huffman}
+
+\subsection{Algorytm Huffmana}
+
+Algorytm Huffmana służy do bezstratnej kompresji danych.
+
+\paragraph{Idea algorytmu:}
+\begin{enumerate}
+    \item Dla każdego znaku obliczana jest jego częstość występowania.
+    \item Tworzona jest kolejka priorytetowa (min-heap) z węzłów posortowanych rosnąco według częstości.
+    \item W każdej iteracji wybierane są dwa węzły o najmniejszych wagach i łączone w nowy węzeł, którego waga jest sumą wag dzieci.
+    \item Nowy węzeł trafia z powrotem do kolejki.
+    \item Proces powtarza się aż do powstania jednego drzewa.
+\end{enumerate}
+
+\paragraph{Przykładowa tabela znaków:}
+
+\begin{center}
+\begin{tabular}{|c|c|}
+\hline
+\textbf{Znak} & \textbf{Częstość} \\
+\hline
+A & 5 \\
+B & 9 \\
+C & 12 \\
+D & 13 \\
+E & 16 \\
+F & 45 \\
+\hline
+\end{tabular}
+\end{center}
+
+\paragraph{Proces łączenia:}
+\begin{itemize}
+    \item Łączymy A(5) i B(9) $\rightarrow$ węzeł o wadze 14
+    \item Łączymy C(12) i D(13) $\rightarrow$ węzeł o wadze 25
+    \item Łączymy 14 i E(16) $\rightarrow$ węzeł o wadze 30
+    \item Łączymy 25 i 30 $\rightarrow$ węzeł o wadze 55
+    \item Łączymy 45 i 55 $\rightarrow$ korzeń o wadze 100
+\end{itemize}
+
+
+
+\paragraph{Kodowanie:}
+Każde przejście w lewo oznacza bit $0$, a w prawo bit $1$.  
+Na tej podstawie powstają kody prefiksowe, np.:
+
+\begin{center}
+\begin{tabular}{|c|c|}
+\hline
+\textbf{Znak} & \textbf{Kod Huffmana} \\
+\hline
+F & 0 \\
+C & 100 \\
+D & 101 \\
+A & 1100 \\
+B & 1101 \\
+E & 111 \\
+\hline
+\end{tabular}
+\end{center}
+
+\subsection{Elementy kodu tenarnej implementacji algorytmu Huffmana}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.75\linewidth]{dfs.png}
+    \caption{Generowanie kodów za pomocą DFS}
+    \label{fig:placeholder}
+\end{figure}
+
+\subsubsection{Generowanie kodów za pomocą przeszukiwania DFS}
+
+Funkcja \texttt{generateCodes} realizuje przejście drzewa Huffmana w głąb (DFS) w celu wygenerowania kodów znaków.
+
+\begin{itemize}
+    \item Każde przejście do kolejnego dziecka oznacza dopisanie cyfry (0, 1 lub 2) do aktualnego kodu.
+    \item Gdy funkcja trafi na liść, zapisuje aktualny ciąg jako kod danego znaku.
+\end{itemize}
+
+\begin{center}
+\rule{0.8\textwidth}{0.5pt}
+\end{center}
+
+\end{document}

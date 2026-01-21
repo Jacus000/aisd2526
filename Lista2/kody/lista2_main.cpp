@@ -276,6 +276,16 @@ void SORT_BY_DIGIT(vector<int>& arr, int digit_place){
         }
     }
 }
+
+void RADIX_SORT(vector<int>& arr){
+    int maksimum = *max_element(arr.begin(),arr.end());
+    int digit_place = 1;
+    while(maksimum/digit_place>0){
+        SORT_BY_DIGIT(arr,digit_place);
+        digit_place*=10;
+    }
+}
+
 void RADIX_SORT_NEGATIVE(vector<int>& arr){
     vector<int> positive,negative;
     for(int num:arr)
@@ -290,16 +300,6 @@ void RADIX_SORT_NEGATIVE(vector<int>& arr){
     for(int num:positive)
         arr.push_back(num);
 }
-
-void RADIX_SORT(vector<int>& arr){
-    int maksimum = *max_element(arr.begin(),arr.end());
-    int digit_place = 1;
-    while(maksimum/digit_place>0){
-        SORT_BY_DIGIT(arr,digit_place);
-        digit_place*=10;
-    }
-}
-
 
 void SORT_BY_DIGIT_FOR_D(vector<int>& arr, int digit_place,int d){
     vector<vector<int>> buckets(d);
@@ -348,63 +348,83 @@ void QUICK_SORT(vector<int>& arr, int start, int ending){
     QUICK_SORT(arr,pivot+1,ending);
 }
 DualPivotIndices DUAL_PIVOT_PARTITION(vector<int>& arr, int start, int ending) {
+    // Sprawdzenie przypadków trywialnych - gdy tablica ma 0 lub 1 element
     if (start >= ending){
         return {start, ending};
     }
+
+    // Zapewnienie, że pierwszy pivot (p1) jest mniejszy lub równy drugiemu (p2)
     if (arr[start] > arr[ending]) {
         swap(arr[start], arr[ending]);
     }
 
-    int p1 = arr[start];
-    int p2 = arr[ending];
+    // Przypisanie wartości pivotów do zmiennych (nie indeksów!)
+    int p1 = arr[start];  // Pierwszy (mniejszy) pivot - wartość
+    int p2 = arr[ending]; // Drugi (większy) pivot - wartość
 
-    int k = start + 1;
-    int l = start + 1;
-    int g = ending - 1;
+    // Inicjalizacja wskaźników:
+    int k = start + 1;  // Bieżący element do przetworzenia
+    int l = start + 1;  // Granica sekcji elementów < p1 (pierwszy element po lewym pivocie)
+    int g = ending - 1; // Granica sekcji elementów > p2 (pierwszy element przed prawym pivocie)
 
+    // Główna pętla przetwarzająca elementy między pivotami
     while (k <= g) {
+        // Przypadek 1: element mniejszy niż pierwszy pivot (p1)
         if (arr[k] < p1) {
-            swap(arr[k], arr[l]);
-            l++;
-        } else if (arr[k] >= p2) {
+            swap(arr[k], arr[l]);  // Przenieś element do sekcji < p1
+            l++;                    // Rozszerz sekcję < p1
+        }
+        // Przypadek 2: element większy lub równy drugiemu pivotowi (p2)
+        else if (arr[k] >= p2) {
+            // Znajdź element który NIE jest większy niż p2
             while (arr[g] > p2 && k < g) {
-                g--;
+                g--;  // Przesuń g w lewo aż do elementu ≤ p2
             }
-            swap(arr[k], arr[g]);
-            g--;
+            swap(arr[k], arr[g]);  // Zamień bieżący element z elementem na pozycji g
+            g--;                   // Rozszerz sekcję > p2
 
+            // Sprawdź czy po zamianie bieżący element (teraz na pozycji k) należy do sekcji < p1
             if (arr[k] < p1) {
-                swap(arr[k], arr[l]);
-                l++;
+                swap(arr[k], arr[l]);  // Jeśli tak, przenieś go do sekcji < p1
+                l++;                    // Rozszerz sekcję < p1
             }
         }
-        k++;
+        // Przypadek 3: element pomiędzy p1 a p2 (p1 ≤ arr[k] < p2) - nic nie rób
+
+        k++;  // Przejdź do następnego elementu
     }
-    l--;
-    swap(arr[start], arr[l]);
 
-    g++;
-    swap(arr[ending], arr[g]);
+    // Końcowe umieszczenie pivotów na swoich pozycjach:
+    l--;  // Przesuń l na ostatni element sekcji < p1
+    swap(arr[start], arr[l]);  // Umieść p1 na swojej ostatecznej pozycji
 
+    g++;  // Przesuń g na pierwszy element sekcji > p2
+    swap(arr[ending], arr[g]);  // Umieść p2 na swojej ostatecznej pozycji
+
+    // Zwróć indeksy ostatecznych pozycji pivotów
     return {l, g};
 }
 
 void DUAL_PIVOT_QUICK_SORT(vector<int>& arr, int start, int ending) {
+    // Warunek stopu rekurencji - pusty lub jednoelementowy podzbiór
     if (ending <= start){
         return;
     }
-    DualPivotIndices pivots = DUAL_PIVOT_PARTITION(arr, start, ending);
-    int p1_index = pivots.p1_index;
-    int p2_index = pivots.p2_index;
 
-    //sekcja lewa
+    // Podział tablicy na 3 sekcje przy użyciu dwóch pivotów
+    DualPivotIndices pivots = DUAL_PIVOT_PARTITION(arr, start, ending);
+    int p1_index = pivots.p1_index;  // Ostateczna pozycja pierwszego pivota
+    int p2_index = pivots.p2_index;  // Ostateczna pozycja drugiego pivota
+
+    // Rekurencyjne sortowanie lewej sekcji: elementy < p1
     DUAL_PIVOT_QUICK_SORT(arr, start, p1_index - 1);
 
-    //sekcja srodkowa
-    if (p1_index+1<p2_index-1){
+    // Rekurencyjne sortowanie środkowej sekcji: elementy między p1 i p2 (p1 ≤ elementy < p2)
+    // Sprawdzenie czy sekcja środkowa ma co najmniej 2 elementy
+    if (p1_index+1 < p2_index-1){
         DUAL_PIVOT_QUICK_SORT(arr, p1_index+1, p2_index-1);
     }
 
-    //sekcja prawa
+    // Rekurencyjne sortowanie prawej sekcji: elementy > p2
     DUAL_PIVOT_QUICK_SORT(arr, p2_index + 1, ending);
 }
